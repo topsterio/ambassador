@@ -95,6 +95,11 @@ def diag_paranoia(configdir, outputdir):
                         cname = cluster['name']
                         csource = cluster['_source']
 
+                        if csource == '--internal--':
+                            # Ignore this one, like the overview will.
+                            # print("%s: dropping --internal-- cluster" % cname)
+                            continue
+
                         if cname not in rclusters:
                             rclusters[cname] = dict(**cluster)
                             rclusters[cname]['_referenced_by'] = [ source_key ]
@@ -219,9 +224,15 @@ def diag_paranoia(configdir, outputdir):
                                       lineterm=""))
 
     if udiff:
-        errors.append("%s\n-- DIFF --\n%s\n-- OVERVIEW --\n%s\n\n-- RECONSTITUTED --\n%s\n" %
-                      ("mismatch between overview and reconstituted diagnostics",
-                       "\n".join(udiff), pretty_filtered_overview, pretty_reconstituted_lists))
+        errors.append(("%s\n-- DIFF --\n%s\n" %
+                       ("mismatch between overview and reconstituted diagnostics",
+                        "\n".join(udiff)),
+                       pretty_filtered_overview,
+                       pretty_reconstituted_lists))
+
+        # errors.append("%s\n-- DIFF --\n%s\n-- OVERVIEW --\n%s\n\n-- RECONSTITUTED --\n%s\n" %
+        #               ("mismatch between overview and reconstituted diagnostics",
+        #                "\n".join(udiff), pretty_filtered_overview, pretty_reconstituted_lists))
 
     return {
         'errors': errors,
@@ -235,7 +246,14 @@ if __name__ == "__main__":
         print("\n".join(['WARNING: %s' % x for x in results['warnings']]))
 
     if (results['errors']):
-        print("\n".join(['ERROR: %s' % x for x in results['errors']]))
+        for err in results['errors']:
+            if type(err) == tuple:
+                print("ERROR: %s" % err[0])
+                open("ov", "w").write(err[1])
+                open("rl", "w").write(err[2])
+            else:
+                print("ERROR: %s" % err)
+
         sys.exit(1)
     else:
         sys.exit(0)

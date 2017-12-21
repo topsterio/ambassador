@@ -117,14 +117,19 @@ def test_config(testname, dirpath, configdir):
     if ambassador.code != 0:
         errors.append('ambassador failed! %s' % ambassador.code)
     else:
-        envoy = shell([ 'docker', 'run', 
-                            '--rm',
-                            '-v', '%s:/etc/ambassador-config' % dirpath,
-                            VALIDATOR_IMAGE,
-                            '/usr/local/bin/envoy',
-                               '--base-id', '1',
-                               '--mode', 'validate',
-                               '-c', '/etc/ambassador-config/envoy.json' ],
+        # envoy = shell([ 'docker', 'run', 
+        #                     '--rm',
+        #                     '-v', '%s:/etc/ambassador-config' % dirpath,
+        #                     VALIDATOR_IMAGE,
+        #                     '/usr/local/bin/envoy',
+        #                        '--base-id', '1',
+        #                        '--mode', 'validate',
+        #                        '-c', '/etc/ambassador-config/envoy.json' ],
+        #               verbose=True)
+        envoy = shell([ '/usr/local/bin/envoy',
+                        '--base-id', '1',
+                        '--mode', 'validate',
+                        '-c', envoy_json_out ],
                       verbose=True)
 
         envoy_succeeded = (envoy.code == 0)
