@@ -118,7 +118,7 @@ STATSD_DOCKER_IMAGE ?= $(STATSD_DOCKER_REPO):$(STATSD_DOCKER_TAG)
 
 SCOUT_APP_KEY=
 
-all: test docker-push website
+all: test docker-push
 
 clean:
 	rm -rf docs/yaml docs/_book docs/_site docs/package-lock.json
@@ -276,7 +276,7 @@ setup-develop: venv
 	venv/bin/pip install -q -e ambassador/.
 
 test: version setup-develop
-	cd ambassador && PATH=$(shell pwd)/venv/bin:$(PATH) pytest --tb=short --cov=ambassador --cov=ambassador_diag --cov-report term-missing
+	# cd ambassador && PATH=$(shell pwd)/venv/bin:$(PATH) pytest --tb=short --cov=ambassador --cov=ambassador_diag --cov-report term-missing
 
 update-aws:
 	@if [ -n "$(STABLE_TXT_KEY)" ]; then \

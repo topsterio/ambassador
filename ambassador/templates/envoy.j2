@@ -35,6 +35,12 @@
                 "path": "/dev/fd/1"
               }
             ],
+
+            "http2_settings": {
+              "initial_stream_window_size": 65535,
+              "initial_connection_window_size": 65535
+            },
+
             "route_config": {
               "virtual_hosts": [
                 {
@@ -117,6 +123,19 @@
       {
         "name": "{{ cluster.name }}",
         "connect_timeout_ms": {{ cluster.timeout_ms or 3000 }},
+
+        "http2_settings": {
+          "initial_stream_window_size": 65535,
+          "initial_connection_window_size": 65535
+        },
+        "circuit_breakers": {
+          "default": {
+            "max_connections": 8,
+            "max_pending_requests": 8,
+            "max_requests": 8,
+            "max_retries": 1
+          }
+        },
         "type": "{{ cluster.type or 'strict_dns' }}",
         "lb_type": "{{ cluster.lb_type or 'round_robin' }}",
         {%- if cluster.features -%}"features": "{{ cluster.features }}",{% endif %}        
@@ -127,14 +146,7 @@
           }{{ "," if not loop.last }}
           {% endfor %}
         ]{%- if cluster.circuit_breakers -%},
-        "circuit_breakers": {
-          "default": {
-            "max_connections": {{ cluster.circuit_breakers.max_connections or 1024 }},
-            "max_pending_requests": {{ cluster.circuit_breakers.max_pending or 1024 }},
-            "max_requests": {{ cluster.circuit_breakers.max_requests or 1024 }},
-            "max_retries": {{ cluster.circuit_breakers.max_retries or 3 }}
-          }
-        }{%- endif -%}{%- if cluster.outlier_detection -%},
+        {%- endif -%}{%- if cluster.outlier_detection -%},
         "outlier_detection": {
           "consecutive_5xx": {{ cluster.outlier_detection.consecutive_5xx or 5 }},
           "max_ejection_percent": {{ cluster.outlier_detection.max_ejection or 100 }},
