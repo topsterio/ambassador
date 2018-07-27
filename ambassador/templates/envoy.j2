@@ -38,7 +38,7 @@
 
             "http2_settings": {
               "initial_stream_window_size": 65535,
-              "initial_connection_window_size": 65535
+              "initial_connection_window_size": {{65535 * 64}}
             },
 
             "route_config": {
@@ -126,13 +126,13 @@
 
         "http2_settings": {
           "initial_stream_window_size": 65535,
-          "initial_connection_window_size": 65535
+          "initial_connection_window_size": {{65535 * 64}}
         },
         "circuit_breakers": {
           "default": {
-            "max_connections": 8,
-            "max_pending_requests": 8,
-            "max_requests": 8,
+            "max_connections": 64,
+            "max_pending_requests": 64,
+            "max_requests": 64,
             "max_retries": 1
           }
         },
